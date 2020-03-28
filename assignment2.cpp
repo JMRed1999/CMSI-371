@@ -268,64 +268,13 @@ void display_func() {
     };
 
     // TODO: Apply rotation(s) to the set of points
-    // Get size of colors, convert to vector
-    int colorsSize = sizeof(colors) / sizeof(colors[0]);
-    std::vector<GLfloat> colors2Vector(colors, colors + colorsSize);
+    vector<GLfloat> homog = to_homogenous_coord(points);
+    float rad = deg2rad(theta);
 
-	// split vector into sub-vectors each of size n
-	int n = 3;
+    vector<GLfloat> result = mat_mult(rotation_matrix_x(rad), homog);
+    vector<GLfloat> newPoints = to_cartesian_coord(result);
 
-	// number of sub-vectors
-	int size = 24;
-
-	// array of vectors to store the sub-vectors
-	std::vector<GLfloat> vecVertices[size];
-    std::vector<GLfloat> vecColors[size];
-
-	// each iteration of loop process next set of n elements
-	// and store it in a vector at k'th index in vec
-	for (int k = 0; k < size; ++k)
-	{
-		auto start_itr_points = std::next(points.cbegin(), k*n);
-		auto end_itr_points = std::next(points.cbegin(), k*n + n);
-
-       	auto start_itr_colors = std::next(colors2Vector.cbegin(), k*n);
-		auto end_itr_colors = std::next(colors2Vector.cbegin(), k*n + n);
-
-		vecVertices[k].resize(n);
-        vecColors[k].resize(n);
-
-		// copy elements from the input range to the sub-vector
-		std::copy(start_itr_points, end_itr_points, vecVertices[k].begin());
-        std::copy(start_itr_colors, end_itr_colors, vecColors[k].begin());
-	}
-    // newPoints contains rotated points about x axis
-    vector<GLfloat> newPoints;
-    newPoints.push_back(72);
-
-    vector<GLfloat> newColors;
-    newColors.push_back(72);
-
-    vector<GLfloat> xrotate = rotation_matrix_x(90.0);
-    int k = 0;
-    int l = 0;
-    for (int i = 0; i < 24; i++ )
-    {
-        // make rotation about x
-        vector<GLfloat> newVecPoints = mat_mult(xrotate, vecVertices[i]);
-        vector<GLfloat> newVecColors = mat_mult(xrotate, vecColors[i]);
-        // load points from newVec to newPoints
-        for (int j = 0; j < newVecPoints.size(); j++){
-            newPoints.at(j) = newVecPoints.at(k);
-            newColors.at(j) = newVecColors.at(k);
-            k = k + 1;
-            l = l + 1;
-        }
-    }
-    
     GLfloat* vertices = vector2array(newPoints);
-
-    GLfloat* finalColors = vector2array(newColors);
 
 
     glVertexPointer(3,          // 3 components (x, y, z)
@@ -337,7 +286,7 @@ void display_func() {
     glColorPointer(3,           // 3 components (r, g, b)
                    GL_FLOAT,    // Vertex type is GL_FLOAT
                    0,           // Start position in referenced memory
-                   finalColors);     // Pointer to memory location to read from
+                   colors);     // Pointer to memory location to read from
 
     // Draw quad point planes: each 4 vertices
     glDrawArrays(GL_QUADS, 0, 4*6);
