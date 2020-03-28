@@ -269,9 +269,8 @@ void display_func() {
 
     // TODO: Apply rotation(s) to the set of points
     vector<GLfloat> homog = to_homogenous_coord(points);
-    float rad = deg2rad(theta);
 
-    vector<GLfloat> result = mat_mult(rotation_matrix_x(rad), homog);
+    vector<GLfloat> result = mat_mult(rotation_matrix_x(theta), homog);
     vector<GLfloat> newPoints = to_cartesian_coord(result);
 
     GLfloat* vertices = vector2array(newPoints);
