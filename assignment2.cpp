@@ -66,9 +66,10 @@ vector<GLfloat> to_cartesian_coord(vector<GLfloat> homogenous_coords) {
 
     // TODO: Remove the 1 in the 4th dimension to generate Cartesian coordinates
     for (int i = 0; i < homogenous_coords.size(); i++) {
-        if ((i + 1) % 3 == 0) {
-            result.pop_back();
+        if ((i + 1) % 4 == 0) {
+           continue; 
         }
+        result.push_back(homogenous_coords[i]);
     }
     return result;
 }
